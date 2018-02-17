@@ -2,7 +2,25 @@
  * Constants and other global information
  */
 var svgns = "http://www.w3.org/2000/svg";
+
+var COLORS = {
+	bgColor: '#ced09f',
+	buildingFill: '#b7a9a2',
+	buildingStroke: '#7b7169',
+	pathStroke: '#e8e1be',
+	tunnelStroke: '#0000ff',
+	roadStroke: '#ffffff',
+};
+
+
 var svg;
+var mapData = {
+	width: 1150,
+	height: 950,
+	x: 0,
+	y: 0,
+	zoom: 1,
+};
 
 
 window.addEventListener('load', init, false);
@@ -19,7 +37,15 @@ function init() {
 	createSVG();
 	document.body.appendChild(svg);
 
-	// set up event handlers
+
+	createSidebar();
+
+
+	// set up event handlers for anything else
+	createHandlers();
+
+
+	console.log("...finished initializing everything");
 }
 
 
@@ -37,16 +63,38 @@ function createSVG() {
 	svg = document.createElementNS(svgns, "svg");
 	svg.setAttribute("BaseProfile", "tiny");
 	svg.setAttribute("version", "1.2")
-	svg.setAttribute("width", "1150");
-	svg.setAttribute("height", "950");
+	svg.setAttribute("width", mapData.width);
+	svg.setAttribute("height", mapData.height);
 	svg.setAttribute("xmlns", svgns);
+	svg.setAttribute("viewport-fill", COLORS.bgColor);
 
 
+	var bgRect = document.createElementNS(svgns, "rect");
+	bgRect.setAttribute("fill", COLORS.bgColor);
+	bgRect.setAttribute("width", mapData.width);
+	bgRect.setAttribute("height", mapData.height);
+	svg.appendChild(bgRect);
 
 	/*
 	 * BUILDING INFORMATION
 	 */
-	
+	var buildings = document.createElementNS(svgns, "g");
+	BUILDINGS.forEach(function(b) {
+		var polygon = document.createElementNS(svgns, "polygon");
+		polygon.setAttribute("fill", COLORS.buildingFill);
+		polygon.setAttribute("stroke", COLORS.buildingStroke);
+		polygon.setAttribute("stroke-width", "1");
+		var string = "";
+		var p = b.points;
+		for (var i = 0; i < p.length; i += 2) {
+            string += p[i] + "," + p[i+1] + " ";
+        }
+        polygon.setAttribute("points", string);
+
+        buildings.appendChild(polygon);
+
+	});
+	svg.appendChild(buildings);
 
 	/*
 	 * PATH INFORMATION
@@ -56,7 +104,7 @@ function createSVG() {
         var polyline = document.createElementNS(svgns, "polyline");
         polyline.setAttribute("fill", "none");
         polyline.setAttribute("stroke-width", "2");
-        polyline.setAttribute("stroke", "black");
+        polyline.setAttribute("stroke", COLORS.pathStroke);
 
         var string = ""
         for (var i = 0; i < e.length; i += 2) {
@@ -68,13 +116,13 @@ function createSVG() {
         polyline.addEventListener("mouseenter", function(e) {
 
             this.setAttribute("stroke", "red");
-            this.setAttribute("stroke-width", 5);
+            this.setAttribute("stroke-width", "5");
 
         }, false);
         polyline.addEventListener("mouseleave", function(e) {
             // USE TRANSPARENT, NOT NONE
-            this.setAttribute("stroke", "black");
-            this.setAttribute("stroke-width", 2);
+            this.setAttribute("stroke", COLORS.pathStroke);
+            this.setAttribute("stroke-width", "2");
         }, false);
 
         polyline.addEventListener("click", function(e) {
@@ -91,6 +139,44 @@ function createSVG() {
     svg.appendChild(pathways);
 }
 
+
+
+function createSidebar() {
+
+}
+
+
+
+/*
+ * Add event handlers to anything needing them that doesn't already have them
+ */
+function createHandlers() {
+	// need to handle map support for zooming in/out and moving around
+	document.addEventListener("keydown", function(evt) {
+		switch(evt.keyCode) {
+			case 37: // left arrow
+				mapData.x = Math.max(0, mapData.x - 10*mapData.zoom);
+				break;
+			case 39: // right arrow
+				mapData.x = Math.min(mapData.width, mapData.x + 10*mapData.zoom);
+				break;
+			case 38: // up arrow
+				mapData.y = Math.max(0, mapData.y - 10*mapData.zoom);
+				break;
+			case 40: // down arrow
+				mapData.y = Math.min(mapData.height, mapData.y + 10*mapData.zoom);
+				break;
+			case 187: // =/+, zoom in
+				mapData.zoom = Math.min(3, mapData.zoom + 0.1);
+				break;
+			case 189: // -, zoom out
+				mapData.zoom = Math.max(0.6, mapData.zoom - 0.1);
+				break;
+		}
+		svg.setAttribute("transform", "translate(" + mapData.x + "," + mapData.y + ") scale(" + mapData.zoom + ")");
+
+	}, false);
+}
 
 /*
  * 
