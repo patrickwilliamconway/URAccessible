@@ -35,7 +35,7 @@ function init() {
 
 	// add the svg map to the page
 	createSVG();
-	document.body.appendChild(svg);
+	document.getElementById('mapContainer').appendChild(svg);
 
 
 	createSidebar();
@@ -153,18 +153,19 @@ function createSidebar() {
 function createHandlers() {
 	// need to handle map support for zooming in/out and moving around
 	document.addEventListener("keydown", function(evt) {
+		// TODO: BOUNDS NEED TO BE BASED ON THE SIZE OF THE MAP CONTAINER
 		switch(evt.keyCode) {
 			case 37: // left arrow
-				mapData.x = Math.max(0, mapData.x - 10*mapData.zoom);
+				mapData.x = Math.max(0, mapData.x + 10*mapData.zoom);
 				break;
 			case 39: // right arrow
-				mapData.x = Math.min(mapData.width, mapData.x + 10*mapData.zoom);
+				mapData.x = Math.min(mapData.width, mapData.x - 10*mapData.zoom);
 				break;
 			case 38: // up arrow
-				mapData.y = Math.max(0, mapData.y - 10*mapData.zoom);
+				mapData.y = Math.min(0, mapData.y + 10*mapData.zoom);
 				break;
 			case 40: // down arrow
-				mapData.y = Math.min(mapData.height, mapData.y + 10*mapData.zoom);
+				mapData.y = Math.max(mapData.height, mapData.y - 10*mapData.zoom);
 				break;
 			case 187: // =/+, zoom in
 				mapData.zoom = Math.min(3, mapData.zoom + 0.1);
