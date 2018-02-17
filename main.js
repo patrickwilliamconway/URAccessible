@@ -23,12 +23,16 @@ var mapData = {
 };
 
 
+var tooltip;
+
+
 window.addEventListener('load', init, false);
 /*
  * Initializes everything
  */
 function init() {
 	console.log('page loaded, initializing...');
+	tooltip = document.getElementById('tooltip');
 
 	// create the graph
 	createGraph();
@@ -91,6 +95,23 @@ function createSVG() {
         }
         polygon.setAttribute("points", string);
 
+        // click to bring up tooltip for that building
+        polygon.addEventListener("click", function(e) {
+            var x = e.pageX + 10;
+            var y = e.pageY - 3;
+            // shift it to the other side of the mouse if near the right/bottom of the screen
+            if (window.innerWidth + window.pageXOffset < x + 210) {
+                x -= 225;
+            }
+            if (window.innerHeight + window.pageYOffset < y + 230) {
+                y -= 220;
+            }
+            tooltip.style.left = x + "px";
+            tooltip.style.top  = y + "px";
+            tooltip.style.display = "block";
+
+        }, false);
+
         buildings.appendChild(polygon);
 
 	});
@@ -126,7 +147,6 @@ function createSVG() {
         }, false);
 
         polyline.addEventListener("click", function(e) {
-
             console.log(this);
 
         }, false);
@@ -152,7 +172,7 @@ function createSidebar() {
  */
 function createHandlers() {
 	// need to handle map support for zooming in/out and moving around
-	document.addEventListener("keydown", function(evt) {
+	document.addEventListener('keydown', function(evt) {
 		// TODO: BOUNDS NEED TO BE BASED ON THE SIZE OF THE MAP CONTAINER
 		switch(evt.keyCode) {
 			case 37: // left arrow
@@ -177,6 +197,11 @@ function createHandlers() {
 		svg.setAttribute("transform", "translate(" + mapData.x + "," + mapData.y + ") scale(" + mapData.zoom + ")");
 
 	}, false);
+
+	// close out of tooltip
+	document.getElementById('tooltip').getElementsByTagName('span')[0].addEventListener('click', function(evt) {
+		document.getElementById('tooltip').style.display = 'none';
+	})
 }
 
 /*

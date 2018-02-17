@@ -2,6 +2,7 @@ body {
 	margin: 0;
 	height: 100%;
     overflow: hidden;
+    font-family: 'Arial';
 }
 
 #mapContainer {
@@ -10,4 +11,41 @@ body {
 	top: 0;
 	overflow: hidden;
 	height: 100vh;
+}
+
+
+#tooltip {
+	position: absolute;
+	display: none;
+	color: white;
+	background-color: #011128;
+	border-radius: 2px;
+	padding: 8px 12px;
+	width: 240px;
+}
+#tooltip h2 {
+	margin: 4px;
+	display: inline-block;
+}
+#tooltip span {
+	float: right;
+	width: 24px;
+	height: 24px;
+	margin-top: 4px;
+	font-size: 24px;
+	text-align: center;
+	line-height: 26px;
+}
+#tooltip span:before {
+	content: "\2716";
+}
+#tooltip span:hover {
+	background-color: white;
+	color: black;
+}
+#tooltip div {
+	width: 160px;
+	border-bottom: 1px solid white;
+}
+#tooltip p {
 }
