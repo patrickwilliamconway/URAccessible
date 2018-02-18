@@ -53,6 +53,7 @@ function init() {
 
 
 	console.log("...finished initializing everything");
+	// dijkstra(100,490);
 }
 
 
@@ -127,13 +128,14 @@ function createSVG() {
 	 * PATH INFORMATION
 	 */
 	var pathways = document.createElementNS(svgns, "g");
-	EDGE_DATA.forEach(function(e) {
+	EDGE_DATA.forEach(function(e, index) {
         var polyline = document.createElementNS(svgns, "polyline");
+        polyline.setAttribute("id", "edge_" + index)
         polyline.setAttribute("fill", "none");
         polyline.setAttribute("stroke-width", "2");
         polyline.setAttribute("stroke", COLORS.pathStroke);
 
-        var string = ""
+        var string = "";
         for (var i = 0; i < e.length; i += 2) {
             string += e[i] + "," + e[i+1] + " ";
         }
@@ -207,32 +209,123 @@ function createHandlers() {
 	// close out of tooltip
 	document.getElementById('tooltip').getElementsByTagName('span')[0].addEventListener('click', function(evt) {
 		document.getElementById('tooltip').style.display = 'none';
-	})
+	}, false);
 }
 
 /*
  * 
  */
-function djikstra(s, t, options=[]) {
-	var distances = new Array(graph.length).fill(Infinity);
-	distances[s] = 0
-	var queue = [s];
+function dijkstra(s, t, options=[]) {
 
-	while(queue.length !== 0) {
-		var v = queue.pop();
-		if (v == t) { return distances[t]; }
+	var distances = new Array(graph.length).fill(Infinity);
+	distances[s] = 0;
+	var previous = new Array(graph.length).fill(-1);
+
+	var heap = {
+		data: [],
+		push: function(n) {
+			this.data.push(n);
+			this.bubbleUp(this.data.length-1);
+		},
+		bubbleUp: function(i) {
+			var parent = Math.floor((i-1)/2);
+			if (distances[this.data[parent]] > distances[this.data[i]]) {
+				this.swap(parent, i);
+				this.bubbleUp(parent);
+			}
+		},
+		pop: function() {
+			if (this.data.length === 0) {
+				return undefined;
+			} else {
+				var top = this.data[0];
+				if (this.data.length === 1) {
+					this.data.pop();
+
+				} else {
+					this.data[0] = this.data.pop(); // replace root with last element
+					this.bubbleDown(0);	
+				}
+				return top;
+			}
+		},
+		bubbleDown: function(i) {
+			var left = 2*i, right = 2*i+1;
+			var smallest;
+			if (right < this.data.length && distances[this.data[i]] > distances[this.data[right]]) {
+				smallest = right;
+			}
+			if (left < this.data.length && distances[this.data[i]] > distances[this.data[left]]) {
+				smallest = left;
+			}
+			if (smallest !== undefined) {
+				this.swap(i, smallest);
+				this.bubbleDown(smallest);
+			}
+		},
+		swap: function(a, b) {
+			var t = this.data[a];
+			this.data[a] = this.data[b];
+			this.data[b] = t;
+		},
+		isEmpty: function() {
+			return (this.data.length === 0);
+		},
+
+	};
+	
+	heap.push(s);
+
+	var counter = 0;
+	console.log("Starting at " + s + ", looking for " + t);
+	while(!heap.isEmpty() && counter < 10000) {
+		counter++;
+		var v = heap.pop();
+		console.log("new loop of dijkstra: vertex " + v);
+		if (v === t) {
+			console.log("found target!");
+			break; // return distances[t];
+		}
+		console.log(graph[v]);
 		for (var i = 0; i < graph[v]["neighbors"].length; i++) {
 			var n = graph[v]["neighbors"][i];
-			if (distances[n] > 1 + distances[s]) {
-				distances[n] = 1 + distances[s];
-				queue.push(n);
+			console.log("distances[" + n + "]=" + distances[n] + ", distances[" + v + "]=" + distances[v]);
+			if (distances[n] > 1 + distances[v]) {
+				distances[n] = 1 + distances[v];
+				heap.push(n);
+				previous[n] = v;
 			}
 		}
 
 	}
-	return -1;
-}
+	console.log("finished dijkstra");
+	if (counter === 10000) { console.log("ENDED PREMATURELY"); }
+	if (distances[t] === undefined) {
+		console.log("could not find path from " + s + " to " + t);
+		return;
+	}
+	console.log(distances);
+	console.log("path:");
+	for (var v = t, prev = undefined; v !== s; v = prev) {
+		var prev = previous[v];
+		console.log("---new---");
+		console.log(v)
+		var evt = new MouseEvent('mouseenter', {
+			bubbles: true,
+			cancelable: true,
+			view: window
+		});
+		console.log(document.getElementById("edge_" + v));
 
+		console.log("going from " + v + " to " + prev);
+		console.log(graph[prev]);
+		console.log("edges of " + prev + ": " + graph[prev]["edges"]);
+		var edge_id = graph[prev]["edges"][graph[prev]["neighbors"].indexOf(v)];
+		document.getElementById("edge_" + edge_id).dispatchEvent(evt);
+	}
+	console.log("reached starting vertex " + v);
+	console.log(previous);
+}
 
 
 

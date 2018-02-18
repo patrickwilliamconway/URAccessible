@@ -159,10 +159,34 @@ print "should have deleted: " + str(v_to_del)
 
 # Special code for Jeremy
 # I do not know what it does
-output = open("edgedata.js", "w")
+# assign vertices numeric IDs
+vertex_map = {}
+i = 0
+for key, v in vertices.items():
+	vertex_map[key] = i
+	i += 1
+
+
+# output edge data
+output = open("roads_4.js", "w")
 output.write("var EDGE_DATA = [\n")
 for e in edges:
-	if (len(e) != 0):
-		output.write("    %s,\n" % e)
+	output.write("    %s,\n" % e)
 output.write("];\n")
 output.close()
+
+
+# output vertex data
+output2 = open("graphdata.js", "w")
+output2.write("var VERTICES = [\n")
+for key, v in vertices.items():
+	output2.write("  {\n")
+	output2.write("    id: " + str(vertex_map[key]) + ",\n")
+	output2.write("    x: " + str(v["x"]) + ",\n")
+	output2.write("    y: " + str(v["y"]) + ",\n")
+	output2.write("    neighbors: " + str(map(lambda x : vertex_map[x], v["neighbors"])) + ",\n")
+	output2.write("    edges: " + str(v["edges"]) + ",\n")
+	output2.write("  },\n")
+output2.write("];\n")
+output2.close()
+
