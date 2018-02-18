@@ -26,6 +26,9 @@ var mapData = {
 var tooltip;
 
 
+var graph;
+
+
 window.addEventListener('load', init, false);
 /*
  * Initializes everything
@@ -57,7 +60,7 @@ function init() {
  * Build the graph and save it in JSON form
  */
 function createGraph() {
-
+	graph = VERTICES
 }
 
 /*
@@ -88,6 +91,7 @@ function createSVG() {
 		polygon.setAttribute("fill", COLORS.buildingFill);
 		polygon.setAttribute("stroke", COLORS.buildingStroke);
 		polygon.setAttribute("stroke-width", "1");
+		polygon.setAttribute("name", b.name);
 		var string = "";
 		var p = b.points;
 		for (var i = 0; i < p.length; i += 2) {
@@ -100,12 +104,14 @@ function createSVG() {
             var x = e.pageX + 10;
             var y = e.pageY - 3;
             // shift it to the other side of the mouse if near the right/bottom of the screen
-            if (window.innerWidth + window.pageXOffset < x + 210) {
-                x -= 225;
+            if (window.innerWidth + window.pageXOffset < x + 260) {
+                x -= 250;
             }
             if (window.innerHeight + window.pageYOffset < y + 230) {
                 y -= 220;
             }
+            tooltip.getElementsByTagName('h2')[0].innerText = this.getAttribute("name");
+
             tooltip.style.left = x + "px";
             tooltip.style.top  = y + "px";
             tooltip.style.display = "block";
@@ -208,5 +214,28 @@ function createHandlers() {
  * 
  */
 function djikstra(s, t, options=[]) {
+	var distances = new Array(graph.length).fill(Infinity);
+	distances[s] = 0
+	var queue = [s];
 
+	while(queue.length !== 0) {
+		var v = queue.pop();
+		if (v == t) { return distances[t]; }
+		for (var i = 0; i < graph[v]["neighbors"].length; i++) {
+			var n = graph[v]["neighbors"][i];
+			if (distances[n] > 1 + distances[s]) {
+				distances[n] = 1 + distances[s];
+				queue.push(n);
+			}
+		}
+
+	}
+	return -1;
 }
+
+
+
+
+
+
+
