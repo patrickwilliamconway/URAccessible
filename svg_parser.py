@@ -176,8 +176,8 @@ output.write("var EDGE_DATA = [\n")
 edge_counter = 0
 counter = 0
 for e in edges:
-	output.write("    %s,\n" % e)
 	if (e != []):
+		output.write("    %s,\n" % e)
 		edge_map[counter] = edge_counter
 		edge_counter += 1
 	counter += 1
