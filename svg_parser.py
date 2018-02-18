@@ -77,39 +77,17 @@ for key, v in vertices.items():
 			e = reverse(e1)
 			e = e[0:len(e) - 2]
 			e = e + e2
-			# print "a"
-			# print e1
-			# print e2
-			# print e
 		elif (e1[0] == e2[len(e2) - 2] and e1[1] == e2[len(e2) - 1]): 
 			e_1 = reverse(e1)
 			e_2 = reverse(e2)
 			e_1 = e_1[0:len(e1) - 2]
-			e = e_1 + e_2
-			# print "b"
-			# print e1
-			# print e2
-			# print e
 		elif (e1[len(e1) - 2] == e2[0] and e1[len(e1) - 1] == e2[1]):
 			e = e1[0:len(e1) - 2] + e2
-			# print "c"
-			# print e1
-			# print e2
-			# print e
 		elif (e1[len(e1) - 2] == e2[len(e2) - 2] and e1[len(e1) - 1] == e2[len(e2) - 1]):
 			e_2 = reverse(e2)
 			e = e1[0:len(e1) - 2] + e_2
-			# print "d"
-			# print e1
-			# print e2
-			# print e
 		else:
 			print "wtf man"
-
-		# e1_id = v["edges"][0]
-		# e2_id = v["edges"][1]
-		# e1 = edges[e1_id]
-		# e2 = edges[e2_id]
 
 		edges[e1_id] = e
 		edges[e2_id] = []
@@ -128,37 +106,9 @@ for key, v in vertices.items():
 
 		del vertices[key]
 
-		# edges[e1_id] = e
-		# neighbor1 = v["neighbors"][0]
-		# neighbor2 = v["neighbors"][1]
-		# print neighbor1
-		# print neighbor2
-		# print e
-
-		# vertex_to_recalibrate = vertices[v["neighbors"][1]]
-
-
-		# v2r_index = vertex_to_recalibrate["edges"].index(e2_id)
-		# vertex_to_recalibrate["edges"][v2r_index] = e2_id
-
-		# # TODO: vector change here
-		# vertex_to_recalibrate["neighbors"][v2r_index] = v["neighbors"][0]
-		# del vertices[key]
-
-		# edges[e2_id] = []
-			
-
-
-
-
-	# del vertices[key]
-
 print "num vertices (post-op): " + str(len(vertices))
 print "should have deleted: " + str(v_to_del)
 
-
-# Special code for Jeremy
-# I do not know what it does
 # assign vertices numeric IDs
 vertex_map = {}
 i = 0
