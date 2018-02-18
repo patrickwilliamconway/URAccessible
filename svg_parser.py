@@ -186,6 +186,16 @@ output.write("];\n")
 output.close()
 
 
+def getWeight(edge):
+	zipped = zip(edge, edge[1:])
+	dist = 0
+	prev = zipped[0]
+	for i in range(1, len(zipped)):
+		dist = dist + ((zipped[i][1]-prev[1])**2+(zipped[i][0]-prev[0])**2)**(.5)
+		prev = zipped[i]
+	return dist
+
+
 # output vertex data
 output2 = open("graphdata.js", "w")
 output2.write("var VERTICES = [\n")
@@ -196,9 +206,17 @@ for key, v in vertices.items():
 	output2.write("    y: " + str(v["y"]) + ",\n")
 	output2.write("    neighbors: " + str(map(lambda x : vertex_map[x], v["neighbors"])) + ",\n")
 	output2.write("    edges: " + str(map(lambda x : edge_map[x], v["edges"])) + ",\n")
+	output2.write("    weights:" + str(map(lambda x : getWeight(edges[x]), v["edges"])) + ",\n")
 	output2.write("  },\n")
 output2.write("];\n")
 output2.close()
 
 print "number of edges: " + str(len(edges))
 print "edge counter: " + str(edge_counter)
+
+
+
+
+
+
+
