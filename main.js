@@ -3,6 +3,8 @@
  */
 var svgns = "http://www.w3.org/2000/svg";
 
+var debug = false;
+
 var COLORS = {
 	bgColor: '#ced09f',
 	buildingFill: '#b7a9a2',
@@ -159,6 +161,7 @@ function createSVG() {
 	 * PATH INFORMATION
 	 */
 	var pathways = document.createElementNS(svgns, "g");
+	pathways.setAttribute("id", "path_edges");
 	EDGE_DATA.forEach(function(e, index) {
         var polyline = document.createElementNS(svgns, "polyline");
         polyline.setAttribute("id", "edge_" + index)
@@ -174,9 +177,12 @@ function createSVG() {
 
         // event handling for hoverover while testing
         polyline.addEventListener("mouseenter", function(e) {
+        	if (debug) {
+        		this.setAttribute("stroke", "red");
+            	this.setAttribute("stroke-width", "5");
+        	}
 
-            this.setAttribute("stroke", "red");
-            this.setAttribute("stroke-width", "5");
+            
 
         }, false);
         polyline.addEventListener("mouseleave", function(e) {
@@ -201,6 +207,33 @@ function createSVG() {
 
 
 function createSidebar() {
+	var sidebar = document.getElementById('sidebar');
+	var selectOrigin = document.createElement('select');
+	var selectDestination = document.createElement('select');
+	selectOrigin.setAttribute('id', 'select_origin');
+	selectDestination.setAttribute('id', 'select_destination');
+	for (var entrance in entrances) {
+		var option1 = document.createElement('option');
+		var option2 = document.createElement('option');
+		option1.setAttribute('value', entrances[entrance][0]);
+		option2.setAttribute('value', entrances[entrance][0]);
+		option1.innerText = entrance;
+		option2.innerText = entrance;
+
+		selectOrigin.appendChild(option1);
+		selectDestination.appendChild(option2);
+	}
+
+	document.getElementById('sb_start').appendChild(selectOrigin);
+	document.getElementById('sb_end').appendChild(selectDestination);
+
+	document.getElementById('sb_submit').addEventListener('click', function(evt) {
+		var start = document.getElementById('select_origin');
+		var end = document.getElementById('select_destination');
+		var vertexStart = parseInt(start.options[start.selectedIndex].value);
+		var vertexEnd = parseInt(end.options[end.selectedIndex].value);
+		dijkstra(vertexStart, vertexEnd);
+	}, false);
 
 }
 
@@ -247,6 +280,14 @@ function createHandlers() {
  * 
  */
 function dijkstra(s, t, options={}) {
+
+	// remove coloring from all paths
+	var paths = document.getElementById('path_edges');
+	for (var i = 0; i < paths.children.length; i++) {
+		var path = paths.children[i];
+		path.setAttribute("stroke", COLORS.pathStroke);
+	}
+
 	console.log(options);
 	var distances = new Array(graph.length).fill(Infinity);
 	distances[s] = 0;
