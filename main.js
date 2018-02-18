@@ -397,7 +397,10 @@ function dijkstra(s, t, options={}) {
 		// console.log("edges of " + prev + ": " + graph[prev]["edges"]);
 		var edge_id = graph[prev]["edges"][graph[prev]["neighbors"].indexOf(v)];
 		// console.log("edge id: " + edge_id);
+		var foo = debug;
+		debug = true;
 		document.getElementById("edge_" + edge_id).dispatchEvent(evt);
+		debug = foo;
 	}
 	// console.log("reached starting vertex " + v);
 	// console.log(previous);
