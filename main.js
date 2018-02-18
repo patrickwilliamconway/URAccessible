@@ -137,6 +137,16 @@ function createSVG() {
             tooltip.style.left = x + "px";
             tooltip.style.top  = y + "px";
             tooltip.style.display = "block";
+            prev_building_clicked = cur_building;
+            cur_building = this.getAttribute("name");
+
+            if (prev_building_clicked !== undefined) {
+            	console.log("starting from " + prev_building_clicked);
+            	console.log("going to " + cur_building);
+            	tooltip.getElementsByTagName('p')[0].innerHTML = '<input type="button" value="get directions from ' + prev_building_clicked + '" onclick="dijkstra(' + entrances[prev_building_clicked][0] + ',' +
+            	entrances[cur_building][0] + ',{accessible:false})"/>';
+            }
+
 
         }, false);
 
@@ -237,7 +247,7 @@ function createHandlers() {
  * 
  */
 function dijkstra(s, t, options={}) {
-
+	console.log(options);
 	var distances = new Array(graph.length).fill(Infinity);
 	distances[s] = 0;
 	var previous = new Array(graph.length).fill(-1);
@@ -311,11 +321,11 @@ function dijkstra(s, t, options={}) {
 		for (var i = 0; i < graph[v]["neighbors"].length; i++) {
 			var n = graph[v]["neighbors"][i];
 			// console.log("distances[" + n + "]=" + distances[n] + ", distances[" + v + "]=" + distances[v]);
-			if (options["accessible"] === true && graph[v].accessible !== false) { // if on accessible 
+			if (options["accessible"] === true && !(graph[v].accessible ===true)) { // if on accessible 
 				continue;
 			}
-			if (distances[n] > 1 + distances[v]) {
-				distances[n] = 1 + distances[v];
+			if (distances[n] > graph[v]["weights"][i] + distances[v]) {
+				distances[n] = graph[v]["weights"][i] + distances[v];
 				heap.push(n);
 				previous[n] = v;
 			}
@@ -341,7 +351,7 @@ function dijkstra(s, t, options={}) {
 		});
 		// console.log(document.getElementById("edge_" + v));
 
-		// console.log("going from " + v + " to " + prev);
+		console.log("going from " + v + " to " + prev);
 		// console.log(graph[prev]);
 		// console.log("edges of " + prev + ": " + graph[prev]["edges"]);
 		var edge_id = graph[prev]["edges"][graph[prev]["neighbors"].indexOf(v)];
