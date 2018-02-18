@@ -167,11 +167,21 @@ for key, v in vertices.items():
 	i += 1
 
 
+edge_map = [-1] * len(edges)
+
 # output edge data
-output = open("roads_4.js", "w")
+output = open("edgedata.js", "w")
 output.write("var EDGE_DATA = [\n")
+
+edge_counter = 0
+counter = 0
 for e in edges:
 	output.write("    %s,\n" % e)
+	if (e != []):
+		edge_map[counter] = edge_counter
+		edge_counter += 1
+	counter += 1
+
 output.write("];\n")
 output.close()
 
@@ -185,8 +195,10 @@ for key, v in vertices.items():
 	output2.write("    x: " + str(v["x"]) + ",\n")
 	output2.write("    y: " + str(v["y"]) + ",\n")
 	output2.write("    neighbors: " + str(map(lambda x : vertex_map[x], v["neighbors"])) + ",\n")
-	output2.write("    edges: " + str(v["edges"]) + ",\n")
+	output2.write("    edges: " + str(map(lambda x : edge_map[x], v["edges"])) + ",\n")
 	output2.write("  },\n")
 output2.write("];\n")
 output2.close()
 
+print "number of edges: " + str(len(edges))
+print "edge counter: " + str(edge_counter)
