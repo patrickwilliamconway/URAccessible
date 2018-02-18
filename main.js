@@ -53,7 +53,7 @@ function init() {
 
 
 	console.log("...finished initializing everything");
-	// dijkstra(100,490);
+	// dijkstra(100,490); // test case
 }
 
 
@@ -277,19 +277,19 @@ function dijkstra(s, t, options=[]) {
 	heap.push(s);
 
 	var counter = 0;
-	console.log("Starting at " + s + ", looking for " + t);
+	// console.log("Starting at " + s + ", looking for " + t);
 	while(!heap.isEmpty() && counter < 10000) {
 		counter++;
 		var v = heap.pop();
-		console.log("new loop of dijkstra: vertex " + v);
+		// console.log("new loop of dijkstra: vertex " + v);
 		if (v === t) {
 			console.log("found target!");
 			break; // return distances[t];
 		}
-		console.log(graph[v]);
+		// console.log(graph[v]);
 		for (var i = 0; i < graph[v]["neighbors"].length; i++) {
 			var n = graph[v]["neighbors"][i];
-			console.log("distances[" + n + "]=" + distances[n] + ", distances[" + v + "]=" + distances[v]);
+			// console.log("distances[" + n + "]=" + distances[n] + ", distances[" + v + "]=" + distances[v]);
 			if (distances[n] > 1 + distances[v]) {
 				distances[n] = 1 + distances[v];
 				heap.push(n);
@@ -298,33 +298,34 @@ function dijkstra(s, t, options=[]) {
 		}
 
 	}
-	console.log("finished dijkstra");
-	if (counter === 10000) { console.log("ENDED PREMATURELY"); }
+	// console.log("finished dijkstra");
+	// if (counter === 10000) { console.log("ENDED PREMATURELY"); }
 	if (distances[t] === undefined) {
 		console.log("could not find path from " + s + " to " + t);
 		return;
 	}
-	console.log(distances);
-	console.log("path:");
+	// console.log(distances);
+	// console.log("path:");
 	for (var v = t, prev = undefined; v !== s; v = prev) {
 		var prev = previous[v];
-		console.log("---new---");
-		console.log(v)
+		// console.log("---new---");
+		// console.log(v)
 		var evt = new MouseEvent('mouseenter', {
 			bubbles: true,
 			cancelable: true,
 			view: window
 		});
-		console.log(document.getElementById("edge_" + v));
+		// console.log(document.getElementById("edge_" + v));
 
-		console.log("going from " + v + " to " + prev);
-		console.log(graph[prev]);
-		console.log("edges of " + prev + ": " + graph[prev]["edges"]);
+		// console.log("going from " + v + " to " + prev);
+		// console.log(graph[prev]);
+		// console.log("edges of " + prev + ": " + graph[prev]["edges"]);
 		var edge_id = graph[prev]["edges"][graph[prev]["neighbors"].indexOf(v)];
+		// console.log("edge id: " + edge_id);
 		document.getElementById("edge_" + edge_id).dispatchEvent(evt);
 	}
-	console.log("reached starting vertex " + v);
-	console.log(previous);
+	// console.log("reached starting vertex " + v);
+	// console.log(previous);
 }
 
 
