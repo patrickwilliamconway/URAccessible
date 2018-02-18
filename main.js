@@ -60,7 +60,7 @@ function init() {
  * Build the graph and save it in JSON form
  */
 function createGraph() {
-	graph = VERTICES
+	graph = VERTICES;
 }
 
 /*
@@ -232,6 +232,7 @@ function djikstra(s, t, options=[]) {
 	}
 	return -1;
 }
+
 
 
 
