@@ -24,9 +24,12 @@ var mapData = {
 
 
 var tooltip;
+var cur_building;
+var prev_building_clicked;
 
 
 var graph;
+var entrances = {};
 
 
 window.addEventListener('load', init, false);
@@ -62,6 +65,24 @@ function init() {
  */
 function createGraph() {
 	graph = VERTICES;
+
+	for (var i = 0; i < ENTRANCE_DATA.length; i++) {
+		var entrance = ENTRANCE_DATA[i];
+		for (var j = 0; j < graph.length; j++) {
+			var vertex = graph[j];
+			if (vertex.x === entrance.x && vertex.y === entrance.y) {
+				vertex.name = entrance.building;
+				vertex.accessible = entrance.accessible;
+				vertex.desc = entrance.desc;
+				if (entrances[vertex.name] === undefined) {
+					entrances[vertex.name] = [vertex.id];
+				} else {
+					entrances[vertex.name].push(vertex.id);
+				}
+				break;
+			}
+		}
+	}
 }
 
 /*
@@ -215,7 +236,7 @@ function createHandlers() {
 /*
  * 
  */
-function dijkstra(s, t, options=[]) {
+function dijkstra(s, t, options={}) {
 
 	var distances = new Array(graph.length).fill(Infinity);
 	distances[s] = 0;
@@ -290,6 +311,9 @@ function dijkstra(s, t, options=[]) {
 		for (var i = 0; i < graph[v]["neighbors"].length; i++) {
 			var n = graph[v]["neighbors"][i];
 			// console.log("distances[" + n + "]=" + distances[n] + ", distances[" + v + "]=" + distances[v]);
+			if (options["accessible"] === true && graph[v].accessible !== false) { // if on accessible 
+				continue;
+			}
 			if (distances[n] > 1 + distances[v]) {
 				distances[n] = 1 + distances[v];
 				heap.push(n);
